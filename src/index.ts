@@ -1,35 +1,19 @@
-import { Plugin } from '@posthog/plugin-scaffold'
-import type { RequestInfo, RequestInit, Response } from 'node-fetch'
+import { PluginEvent, PluginMeta } from '@posthog/plugin-scaffold'
 
-// fetch only declared, as it's provided as a plugin VM global
-declare function fetch(url: RequestInfo, init?: RequestInit): Promise<Response>
+export function setupPlugin({ config, global }: PluginMeta) {
 
-// Some internal library function
-async function getRandomNumber(): Promise<number> {
-    return 4 // remove this line to get an actual random number from random.org – caution, rate limited to 10 events/s!
-    const response = await fetch(
-        'https://www.random.org/integers/?num=1&min=1&max=1000000000&col=1&base=10&format=plain&rnd=new'
-    )
-    const integer = parseInt(await response.text())
-    return integer
+    const percentage = parseFloat(config.percentage)
+    if ( isNaN(percentage) || percentage > 100 || percentage < 0) {
+        throw new Error('Percentage must be a number between 0 and 100.')
+    }
+    global.percentage = percentage
 }
 
-// The famed Hello World plugin itself
-const helloWorld: Plugin = {
-    setupPlugin: async ({ config }) => {
-        console.log(`Setting up the plugin:\n${config.greeting}`)
-    },
-    processEvent: async (event, { config, cache }) => {
-        const counterValue = (await cache.get('greeting_counter', 0)) as number
-        cache.set('greeting_counter', counterValue + 1)
-        if (!event.properties) {
-            event.properties = {}
-        }
-        event.properties['greeting'] = config.greeting
-        event.properties['greeting_counter'] = counterValue
-        event.properties['random_number'] = await getRandomNumber()
+// /* Runs on every event */
+export function processEvent(event: PluginEvent, { global }: PluginMeta) {
+
+    if (Math.random() < global.percentage / 100) {
         return event
-    },
+    }
+    return null
 }
-
-export = helloWorld

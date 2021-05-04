@@ -1,0 +1,18 @@
+{
+    "name": "Downsampling Plugin",
+    "url": "https://github.com/posthog/downsampling-plugin",
+    "description": "Reduces event volume coming into PostHog",
+    "main": "src/index.ts",
+    "posthogVersion": ">= 1.24.0",
+    "config": [
+        {
+          "key": "percentage",
+          "hint": "Reduces events flowing in to above %",
+          "name": "% of events to keep",
+          "type": "string",
+          "order": 1,
+          "default": "100",
+          "required": false
+        }
+      ]
+}
