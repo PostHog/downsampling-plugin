@@ -6,7 +6,7 @@ Reduces the number of events going into PostHog
 
 1. Open PostHog.
 1. Head to the Plugins page from the sidebar.
-1. Either install Hello World from Available plugins, or install from URL using this repository's URL.
+1. Either install Downsampling Plugin from Available plugins, or install from URL using this repository's URL.
 
 ## Questions?
 
