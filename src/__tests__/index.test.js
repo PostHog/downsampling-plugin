@@ -45,10 +45,23 @@ test('processEvent filters 0 events at 0 percent', () => {
 
 test('processEvent filters same events at different increasing percent', () => {
 
-    // create a event. Hash generates 0.42
+    // create an event. Hash generates 0.42
     const event0 = createEvent({ distinct_id: '1' })
 
-    for (let i = 5; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
+        resetMeta({
+            config: {
+                percentage: (i*10).toString(),
+            },
+        })
+            // Setup Plugin
+        setupPlugin(getMeta())
+
+        const event1 = processEvent(event0, getMeta())
+        expect(event1).toBeNull()
+    }
+
+    for (let i = 5; i <= 10; i++) {
         resetMeta({
             config: {
                 percentage: (i*10).toString(),

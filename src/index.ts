@@ -22,7 +22,7 @@ export function processEvent(event: PluginEvent, { global }: PluginMeta) {
         .digest("hex");
     const decision_value = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff;
 
-    if (decision_value < global.percentage / 100) {
+    if (decision_value <= global.percentage / 100) {
         return event
     }
     return null
