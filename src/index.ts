@@ -7,6 +7,7 @@ export function setupPlugin({ config, global }: PluginMeta) {
         throw new Error('Percentage must be a number between 0 and 100.')
     }
     global.percentage = percentage
+    global.randomSampling = config.samplingMethod === 'Random sampling'
 }
 
 // /* Runs on every event */
@@ -20,9 +21,15 @@ export function processEvent(event: PluginEvent, { global }: PluginMeta) {
     const hash = createHash("sha256")
         .update(event.distinct_id)
         .digest("hex");
-    const decision_value = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff;
 
-    if (decision_value <= global.percentage / 100) {
+    let decisionValue = 0
+    if (global.randomSampling) {
+        decisionValue = parseInt(Math.random()*100)
+    } else {
+        decisionValue = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff;
+    }
+
+    if (decisionValue <= global.percentage / 100) {
         return event
     }
     return null
