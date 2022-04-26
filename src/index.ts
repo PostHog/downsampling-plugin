@@ -18,14 +18,15 @@ export function processEvent(event: PluginEvent, { global }: PluginMeta) {
     // dividing by the biggest 15 digit, base 16 number to get a value between 0 and 1.
     // This is stable, so a distinct_id that was allowed before will continue to be allowed,
     // even if the percentage increases
-    const hash = createHash("sha256")
-        .update(event.distinct_id)
-        .digest("hex");
+
 
     let decisionValue = 0
     if (global.randomSampling) {
         decisionValue = parseInt(Math.random()*100)
     } else {
+        const hash = createHash("sha256")
+            .update(event.distinct_id)
+            .digest("hex")
         decisionValue = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff;
     }
 
