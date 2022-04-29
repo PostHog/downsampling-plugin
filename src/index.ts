@@ -20,17 +20,18 @@ export function processEvent(event: PluginEvent, { global }: PluginMeta) {
     // even if the percentage increases
 
 
-    let decisionValue = 0
+    let shouldIngestEvent = true
     if (global.randomSampling) {
-        decisionValue = parseInt(Math.random()*100)
+        shouldIngestEvent = parseInt(Math.random()*100) <= global.percentage
     } else {
         const hash = createHash("sha256")
             .update(event.distinct_id)
             .digest("hex")
-        decisionValue = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff;
+        const decisionValue = parseInt(hash.substring(0, 15), 16) / 0xfffffffffffffff
+        shouldIngestEvent = decisionValue <= global.percentage / 100
     }
 
-    if (decisionValue <= global.percentage / 100) {
+    if (shouldIngestEvent) {
         return event
     }
     return null
